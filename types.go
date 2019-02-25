@@ -8,14 +8,14 @@ package goscgp
 // 	3 -- HP
 // 	4 -- Damaged
 type Condition struct {
+	Condition string
 	Count     int
-	Price     float32
-	Condition uint8
+	Price     string
 }
 
 type Card struct {
-	Name string
-	Set  string
-	Foil bool
-	Cond []Condition
+	Name       string
+	Set        string
+	Foil       bool
+	Conditions []Condition
 }
