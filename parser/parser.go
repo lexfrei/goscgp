@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"fmt"
 	"net/url"
 	"os"
 	"regexp"
@@ -56,7 +55,7 @@ func ParceCardsOnPage(doc *goquery.Document) ([]goscgp.Card, error) {
 	return cards, nil
 }
 
-func QueryWalker(u url.URL) ([]goscgp.Card, error) {
+func ParceQuery(u url.URL) ([]goscgp.Card, error) {
 	var cards []goscgp.Card
 
 	wg := &sync.WaitGroup{}
@@ -73,6 +72,8 @@ func QueryWalker(u url.URL) ([]goscgp.Card, error) {
 
 	wg.Wait()
 
+	close(results)
+
 	for res := range results {
 		cards = append(cards, res...)
 	}
@@ -81,9 +82,8 @@ func QueryWalker(u url.URL) ([]goscgp.Card, error) {
 }
 
 func worker(id int, jobs chan url.URL, results chan<- []goscgp.Card, wg *sync.WaitGroup) {
-	wg.Done()
+	defer wg.Done()
 	for j := range jobs {
-		fmt.Println("Worker", id, "got a job")
 		doc, err := goquery.NewDocument(j.String())
 		if err != nil {
 			os.Exit(1)
@@ -91,7 +91,6 @@ func worker(id int, jobs chan url.URL, results chan<- []goscgp.Card, wg *sync.Wa
 
 		u, exists := doc.Find("#content > table:nth-child(1) > tbody > tr:nth-child(2) > td > div:nth-child(1) > a:contains(\"Next>>\")").Attr("href")
 
-		fmt.Println("Worker", id, "found a job with status:", exists)
 		if exists {
 			job, err := url.Parse(u)
 			if err != nil {
@@ -99,7 +98,6 @@ func worker(id int, jobs chan url.URL, results chan<- []goscgp.Card, wg *sync.Wa
 			}
 			jobs <- *job
 		} else {
-			fmt.Println("All jobs found")
 			close(jobs)
 		}
 
@@ -109,6 +107,5 @@ func worker(id int, jobs chan url.URL, results chan<- []goscgp.Card, wg *sync.Wa
 		}
 
 		results <- result
-		fmt.Println("Worker", id, "is free now")
 	}
 }

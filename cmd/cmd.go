@@ -14,7 +14,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	result, err := parser.QueryWalker(*siteURL)
+	result, err := parser.ParceQuery(*siteURL)
 	if err != nil {
 		os.Exit(1)
 	}
