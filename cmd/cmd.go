@@ -6,15 +6,25 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 
 	"github.com/lexfrei/goscgp/parser"
 )
 
 func main() {
-	siteURL, err := url.Parse("http://www.starcitygames.com/results?&numpage=25&switch_display=1&name=Skewer+the+Critics")
+	if len(os.Args) < 2 {
+		fmt.Printf("usage: %s <card name>\n", os.Args[0])
+		return
+	}
+
+	siteURL, err := url.Parse("http://www.starcitygames.com/results?&switch_display=1")
 	if err != nil {
 		os.Exit(1)
 	}
+
+	q := siteURL.Query()
+	q.Set("name", strings.Join(os.Args[1:], " "))
+	siteURL.RawQuery = q.Encode()
 
 	c := &http.Client{}
 
