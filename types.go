@@ -6,7 +6,7 @@ import "fmt"
 type Card struct {
 	Name       string       `json:"Name"`
 	Set        string       `json:"Set"`
-	Foil       bool         `json:"Foil"`
+	Foil       bool         `json:"Foil,omitempty"`
 	Conditions []Conditions `json:"Conditions"`
 }
 
