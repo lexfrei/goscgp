@@ -2,6 +2,7 @@ package goscgp
 
 import "fmt"
 
+// Card contains info about card: it's name, set, foiling and conditions
 type Card struct {
 	Name       string       `json:"Name"`
 	Set        string       `json:"Set"`
@@ -9,17 +10,13 @@ type Card struct {
 	Conditions []Conditions `json:"Conditions"`
 }
 
-// Conditions contains:
-// Items on market, Price on market,
-// Card condition:
-//	1 -- M/NM
-// 	2 -- PL
-// 	3 -- HP
-// 	4 -- Damaged
+// Conditions contains info about card's condition: condition code,
+// 													availible units and price
 type Conditions struct {
 	Condition string `json:"Condition"`
 	Count     int    `json:"Count"`
 	Price     int    `json:"Price"`
+	Discount  int    `json:"Discount,omitempty"`
 }
 
 func (c Card) String() string {
@@ -31,9 +28,14 @@ func (c Card) String() string {
 	for _, v := range c.Conditions {
 		str = str + fmt.Sprintf("\t\n%s", v.String())
 	}
-	return str
+	return str + "\n"
 }
 
 func (c Conditions) String() string {
-	return fmt.Sprintf("%s costs *%.2f (%d availeble)", c.Condition, (float64(c.Price) / 100), c.Count)
+	d := ""
+	if c.Discount != 0 {
+		d = fmt.Sprintf(" (discount price: $%.2f) ", float64(c.Discount)/100)
+	}
+
+	return fmt.Sprintf("%s costs $%.2f%s (%d availeble)", c.Condition, (float64(c.Price) / 100), d, c.Count)
 }
