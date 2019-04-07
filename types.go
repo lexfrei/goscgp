@@ -37,5 +37,5 @@ func (c Conditions) String() string {
 		d = fmt.Sprintf(" (discount price: $%.2f) ", float64(c.Discount)/100)
 	}
 
-	return fmt.Sprintf("%s costs $%.2f%s (%d availeble)", c.Condition, (float64(c.Price) / 100), d, c.Count)
+	return fmt.Sprintf("%s costs $%.2f%s (%d available)", c.Condition, (float64(c.Price) / 100), d, c.Count)
 }
